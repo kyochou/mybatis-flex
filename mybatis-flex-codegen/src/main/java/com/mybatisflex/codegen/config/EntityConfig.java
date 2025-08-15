@@ -15,11 +15,11 @@
  */
 package com.mybatisflex.codegen.config;
 
-import com.mybatisflex.codegen.entity.Table;
-
 import java.io.Serializable;
 import java.lang.reflect.TypeVariable;
 import java.util.function.Function;
+
+import com.mybatisflex.codegen.entity.Table;
 
 /**
  * 生成 Entity 的配置。
@@ -68,7 +68,7 @@ public class EntityConfig implements Serializable {
     /**
      * Entity 默认实现的接口。
      */
-    private Class<?>[] implInterfaces = {Serializable.class};
+    private Class<?>[] implInterfaces = {};
 
     /**
      * Entity 是否使用 Lombok 注解。

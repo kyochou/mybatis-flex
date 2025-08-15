@@ -11,11 +11,7 @@ import #(importClass);
 #if(withActiveRecord)
 import com.mybatisflex.core.activerecord.Model;
 #end
-
-#if(jdkVersion >= 14)
-import java.io.Serial;
-#end
-
+import cn.org.kyo.common.entity.DBEntity;
 #if(!isBase)
 #if(withSwagger && swaggerVersion.getName() == "FOX")
 import io.swagger.annotations.ApiModel;
@@ -80,12 +76,16 @@ import lombok.EqualsAndHashCode;
 @Schema(description = "#(table.getComment())")
 #end
 #(table.buildTableAnnotation()) #end
-public class #(entityClassName)#if(withActiveRecord) extends Model<#(entityClassName)>#else#(table.buildExtends(isBase))#(table.buildImplements())#end  {
+import jakarta.persistence.MappedSuperclass;
+import lombok.Data;
+import lombok.experimental.Accessors;
+import lombok.experimental.FieldNameConstants;
 
-    #if(jdkVersion >= 14)
-    @Serial
-    #end
-    private static final long serialVersionUID = 1L;
+@Data
+@Accessors(chain = true)
+@MappedSuperclass
+@FieldNameConstants
+public class #(entityClassName) extends DBEntity {
 
 #for(column : table.columns)
     #set(comment = javadocConfig.formatColumnComment(column.comment))

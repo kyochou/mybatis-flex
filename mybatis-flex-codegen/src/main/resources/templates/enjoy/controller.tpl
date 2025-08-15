@@ -2,10 +2,15 @@
 #set(primaryKeyType = table.getPrimaryKey().getPropertySimpleType())
 #set(entityClassName = table.buildEntityClassName())
 #set(entityVarName = firstCharToLowerCase(entityClassName))
+#set(mapperVarName = firstCharToLowerCase(table.buildMapperClassName()))
 #set(serviceVarName = firstCharToLowerCase(table.buildServiceClassName()))
+#set(tableDefClassName = table.buildTableDefClassName())
 package #(packageConfig.controllerPackage);
 
+import com.mybatisflex.core.BaseMapper;
 import com.mybatisflex.core.paginate.Page;
+import com.mybatisflex.core.table.TableDef;
+import #(packageConfig.tableDefPackage).#(tableDefClassName);
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.beans.factory.annotation.Autowired;
 import #(packageConfig.entityPackage).#(entityClassName);
 import #(packageConfig.servicePackage).#(table.buildServiceClassName());
+import #(packageConfig.mapperPackage).#(table.buildMapperClassName());
+import cn.org.kyo.admin.controller.CRUDController;
 #if(controllerConfig.restStyle)
 import org.springframework.web.bind.annotation.RestController;
 #else
@@ -34,6 +41,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 #end
+import java.math.BigInteger;
 import java.util.List;
 
 /**
@@ -58,11 +66,23 @@ import java.util.List;
 @Tag(name = "#(tableComment)接口")
 #end
 @RequestMapping("#(table.buildControllerRequestMappingPrefix())/#(firstCharToLowerCase(entityClassName))")
-public class #(table.buildControllerClassName()) #if(controllerConfig.superClass)extends #(controllerConfig.buildSuperClassName()) #end {
+public class #(table.buildControllerClassName()) extends CRUDController<#(entityClassName)> {
 
     @Autowired
     private #(table.buildServiceClassName()) #(serviceVarName);
 
+    @Autowired
+    private #(table.buildMapperClassName()) #(mapperVarName);
+
+    @Override
+    public BaseMapper<#(entityClassName)> getMapping() {
+        return #(mapperVarName);
+    }
+
+    @Override
+    public TableDef getTableDef() {
+        return #(tableDefClassName).#(tableDefConfig.buildFieldName(table.buildEntityClassName() + tableDefConfig.instanceSuffix));
+    }
     /**
      * 保存#(tableComment)。
      *
@@ -110,7 +130,7 @@ public class #(table.buildControllerClassName()) #if(controllerConfig.superClass
     #if(withSwagger && swaggerVersion.getName() == "DOC")
     @Operation(description="根据主键更新#(tableComment)")
     #end
-    public boolean update(@RequestBody #if(withSwagger && swaggerVersion.getName() == "FOX")@ApiParam("#(tableComment)主键") #end #if(withSwagger && swaggerVersion.getName() == "DOC")@Parameter(description="#(tableComment)主键") #end #(entityClassName) #(entityVarName)) {
+    public boolean doUpdate(@RequestBody #if(withSwagger && swaggerVersion.getName() == "FOX")@ApiParam("#(tableComment)主键") #end #if(withSwagger && swaggerVersion.getName() == "DOC")@Parameter(description="#(tableComment)主键") #end #(entityClassName) #(entityVarName)) {
         return #(serviceVarName).updateById(#(entityVarName));
     }
 

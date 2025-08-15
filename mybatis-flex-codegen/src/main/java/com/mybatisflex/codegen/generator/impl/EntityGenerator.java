@@ -15,6 +15,10 @@
  */
 package com.mybatisflex.codegen.generator.impl;
 
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+
 import com.mybatisflex.codegen.config.EntityConfig;
 import com.mybatisflex.codegen.config.GlobalConfig;
 import com.mybatisflex.codegen.config.PackageConfig;
@@ -22,10 +26,6 @@ import com.mybatisflex.codegen.constant.TemplateConst;
 import com.mybatisflex.codegen.entity.Table;
 import com.mybatisflex.codegen.generator.IGenerator;
 import com.mybatisflex.core.util.StringUtil;
-
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Entity 生成器。

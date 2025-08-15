@@ -15,17 +15,18 @@
  */
 package com.mybatisflex.codegen.generator.impl;
 
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+
 import com.mybatisflex.codegen.config.ControllerConfig;
 import com.mybatisflex.codegen.config.GlobalConfig;
 import com.mybatisflex.codegen.config.PackageConfig;
+import com.mybatisflex.codegen.config.TableDefConfig;
 import com.mybatisflex.codegen.constant.TemplateConst;
 import com.mybatisflex.codegen.entity.Table;
 import com.mybatisflex.codegen.generator.IGenerator;
 import com.mybatisflex.core.util.StringUtil;
-
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Controller 生成器。
@@ -66,10 +67,11 @@ public class ControllerGenerator implements IGenerator {
             return;
         }
 
-
+        TableDefConfig tableDefConfig = globalConfig.getTableDefConfig();
         Map<String, Object> params = new HashMap<>(4);
         params.put("table", table);
         params.put("packageConfig", packageConfig);
+        params.put("tableDefConfig", tableDefConfig);
         params.put("controllerConfig", controllerConfig);
         params.put("javadocConfig", globalConfig.getJavadocConfig());
         params.put("withSwagger", globalConfig.isEntityWithSwagger());

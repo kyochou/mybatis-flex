@@ -29,15 +29,14 @@ import lombok.experimental.Accessors;
 #if(entityConfig.isLombokAllArgsConstructorEnable())
 import lombok.AllArgsConstructor;
 #end
-import lombok.Builder;
+import jakarta.persistence.MappedSuperclass;
 import lombok.Data;
+import lombok.experimental.Accessors;
+import lombok.experimental.FieldNameConstants;
 #if(entityConfig.isLombokNoArgsConstructorEnable())
 import lombok.NoArgsConstructor;
 #end
 #end
-#end
-#if(jdkVersion >= 14)
-import java.io.Serial;
 #end
 
 #if(!isBase)
@@ -58,8 +57,6 @@ import java.io.Serial;
 @Data(staticConstructor = "create")
 @EqualsAndHashCode(callSuper = true)
 #else
-@Data
-@Builder
 #if(entityConfig.isLombokNoArgsConstructorEnable())
 @NoArgsConstructor
 #end
@@ -75,5 +72,8 @@ import java.io.Serial;
 @Schema(description = "#(table.getComment())")
 #end
 #if(!isBase)#(table.buildTableAnnotation())#end
+@Data
+@Accessors(chain = true)
+@FieldNameConstants
 public class #(entityClassName) extends #(baseClassName) {
 }

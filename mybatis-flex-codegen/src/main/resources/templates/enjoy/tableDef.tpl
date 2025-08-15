@@ -55,6 +55,7 @@ public class #(tableDefClassName) extends TableDef {
         super(schema, name, alisa);
     }
 
+    @Override
     public #(tableDefClassName) as(String alias) {
         String key = getNameWithSchema() + "." + alias;
         return getCache(key, k -> new #(tableDefClassName)("#(schema)", "#(table.name)", alias));
