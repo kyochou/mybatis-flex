@@ -15,27 +15,13 @@
  */
 package com.mybatisflex.codegen.entity;
 
-import com.mybatisflex.codegen.config.ControllerConfig;
-import com.mybatisflex.codegen.config.EntityConfig;
-import com.mybatisflex.codegen.config.GlobalConfig;
-import com.mybatisflex.codegen.config.MapperConfig;
-import com.mybatisflex.codegen.config.MapperXmlConfig;
-import com.mybatisflex.codegen.config.ServiceConfig;
-import com.mybatisflex.codegen.config.ServiceImplConfig;
-import com.mybatisflex.codegen.config.TableConfig;
-import com.mybatisflex.codegen.config.TableDefConfig;
+import com.mybatisflex.codegen.config.*;
 import com.mybatisflex.core.util.StringUtil;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -43,42 +29,40 @@ import java.util.stream.Collectors;
  */
 public class Table {
 
+    List<String> superColumns = null;
     /**
      * 表名。
      */
     private String name;
-
     /**
      * schema（模式）。
      */
     private String schema;
-
     /**
      * 表注释。
      */
     private String comment;
-
     /**
      * 主键。
      */
     private Set<String> primaryKeys;
-
     /**
      * 所包含的列。
      */
     private List<Column> columns = new ArrayList<>();
-
     /**
      * 表配置。
      */
     private TableConfig tableConfig;
-
     private EntityConfig entityConfig;
-
     /**
      * 全局配置。
      */
     private GlobalConfig globalConfig;
+    /**
+     * 默认主键。
+     */
+    private Column defaultPrimaryKey;
 
     public String getSchema() {
         return schema;
@@ -106,11 +90,6 @@ public class Table {
     public void setComment(String comment) {
         this.comment = comment;
     }
-
-    /**
-     * 默认主键。
-     */
-    private Column defaultPrimaryKey;
 
     public Column getPrimaryKey() {
         if (defaultPrimaryKey == null) {
@@ -142,14 +121,13 @@ public class Table {
         ArrayList<Column> arrayList = new ArrayList<>(columns);
         // 生成字段排序
         arrayList.sort(Comparator.comparingInt((Column c) -> c.getProperty().length())
-            .thenComparing(Column::getProperty));
+                           .thenComparing(Column::getProperty));
         return arrayList;
     }
 
     public void setColumns(List<Column> columns) {
         this.columns = columns;
     }
-
 
     public boolean containsColumn(String columnName) {
         if (columns == null || columns.isEmpty() || StringUtil.noText(columnName)) {
@@ -181,8 +159,6 @@ public class Table {
         return false;
     }
 
-    List<String> superColumns = null;
-
     public void addColumn(Column column) {
         if (superColumns == null) {
             superColumns = new ArrayList<>();
@@ -202,7 +178,9 @@ public class Table {
         // 主键
         if (primaryKeys != null && primaryKeys.contains(column.getName())) {
             column.setPrimaryKey(true);
-            if (column.getAutoIncrement() == null && (column.getPropertyType().equals(Integer.class.getName()) || column.getPropertyType().equals(BigInteger.class.getName()))) {
+            if (column.getAutoIncrement() == null && (column.getPropertyType().equals(Integer.class.getName())
+                || column.getPropertyType().equals(BigInteger.class.getName())
+                || column.getPropertyType().equals(Integer.class.getName()))) {
                 column.setAutoIncrement(true);
             }
             if (defaultPrimaryKey == null) {
@@ -339,13 +317,16 @@ public class Table {
                 tableAnnotation.append(", camelToUnderline = ").append(tableConfig.getCamelToUnderline());
             }
             if (tableConfig.getInsertListenerClass() != null) {
-                tableAnnotation.append(", onInsert = ").append(tableConfig.getInsertListenerClass().getSimpleName()).append(".class");
+                tableAnnotation.append(", onInsert = ").append(
+                    tableConfig.getInsertListenerClass().getSimpleName()).append(".class");
             }
             if (tableConfig.getUpdateListenerClass() != null) {
-                tableAnnotation.append(", onUpdate = ").append(tableConfig.getUpdateListenerClass().getSimpleName()).append(".class");
+                tableAnnotation.append(", onUpdate = ").append(
+                    tableConfig.getUpdateListenerClass().getSimpleName()).append(".class");
             }
             if (tableConfig.getSetListenerClass() != null) {
-                tableAnnotation.append(", onSet = ").append(tableConfig.getSetListenerClass().getSimpleName()).append(".class");
+                tableAnnotation.append(", onSet = ").append(tableConfig.getSetListenerClass().getSimpleName()).append(
+                    ".class");
             }
             if (Boolean.FALSE.equals(tableConfig.getMapperGenerateEnable())) {
                 tableAnnotation.append(", mapperGenerateEnable = false");
@@ -378,7 +359,8 @@ public class Table {
         EntityConfig entityConfig = globalConfig.getEntityConfig();
         Class<?> superClass = entityConfig.getSuperClass(this);
         if (superClass != null) {
-            return " extends " + superClass.getSimpleName() + (entityConfig.isSuperClassGenericity(this) ? ("<" + buildEntityClassName() + (isBase ? entityConfig.getWithBaseClassSuffix() : "") + ">") : "");
+            return " extends " + superClass.getSimpleName() + (entityConfig.isSuperClassGenericity(
+                this) ? ("<" + buildEntityClassName() + (isBase ? entityConfig.getWithBaseClassSuffix() : "") + ">") : "");
         } else {
             return "";
         }
@@ -391,7 +373,8 @@ public class Table {
         Class<?>[] entityInterfaces = globalConfig.getEntityConfig().getImplInterfaces();
         if (entityInterfaces != null && entityInterfaces.length > 0) {
             return " implements " + StringUtil.join(", ", Arrays.stream(entityInterfaces)
-                .map(Class::getSimpleName).collect(Collectors.toList()));
+                .map(Class::getSimpleName).collect(Collectors.toList())
+            );
         } else {
             return "";
         }
@@ -450,7 +433,9 @@ public class Table {
             for (String suffix : tableSuffixes) {
                 String trimSuffix = suffix.trim();
                 if (!trimSuffix.isEmpty() && name.endsWith(trimSuffix)) {
-                    entityJavaFileName = entityJavaFileName.substring(0, entityJavaFileName.length() - trimSuffix.length());
+                    entityJavaFileName = entityJavaFileName.substring(0,
+                                                                      entityJavaFileName.length() - trimSuffix.length()
+                    );
                     break;
                 }
             }

@@ -53,6 +53,9 @@ public class QueryWrapper extends BaseQueryWrapper<QueryWrapper> {
      * @return 查询对象 QueryWrapper
      */
     public static QueryWrapper create(Object entity) {
+        if (entity == null) {
+            return create();
+        }
         TableInfo tableInfo = TableInfoFactory.ofEntityClass(ClassUtil.getUsefulClass(entity.getClass()));
         return tableInfo.buildQueryWrapper(entity, null);
     }
@@ -161,6 +164,11 @@ public class QueryWrapper extends BaseQueryWrapper<QueryWrapper> {
             }
         }
         return this;
+    }
+
+    public QueryWrapper reselect(QueryColumn... queryColumns) {
+        setSelectColumns(new ArrayList<>());
+        return select(queryColumns);
     }
 
     public QueryWrapper select(Iterable<QueryColumn> queryColumns) {

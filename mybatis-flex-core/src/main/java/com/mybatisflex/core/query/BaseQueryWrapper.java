@@ -213,7 +213,7 @@ public class BaseQueryWrapper<T extends BaseQueryWrapper<T>> implements CloneSup
         this.joinTables = joinTables;
     }
 
-    protected QueryCondition getWhereQueryCondition() {
+    public QueryCondition getWhereQueryCondition() {
         return whereQueryCondition;
     }
 

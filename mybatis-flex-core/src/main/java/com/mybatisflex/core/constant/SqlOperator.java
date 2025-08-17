@@ -52,6 +52,10 @@ public enum SqlOperator {
      * like %value%
      */
     LIKE(SqlConsts.LIKE),
+    /**
+     * ilike %value%
+     */
+    ILIKE(SqlConsts.ILIKE),
 
     /**
      * like value%

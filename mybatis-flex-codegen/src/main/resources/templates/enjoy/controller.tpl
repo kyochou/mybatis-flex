@@ -5,12 +5,14 @@
 #set(mapperVarName = firstCharToLowerCase(table.buildMapperClassName()))
 #set(serviceVarName = firstCharToLowerCase(table.buildServiceClassName()))
 #set(tableDefClassName = table.buildTableDefClassName())
+#set(tableClassName = tableDefConfig.buildFieldName(table.buildEntityClassName() + tableDefConfig.instanceSuffix))
 package #(packageConfig.controllerPackage);
+
+import static #(packageConfig.tableDefPackage).#(tableDefClassName).#(tableClassName);
 
 import com.mybatisflex.core.BaseMapper;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.table.TableDef;
-import #(packageConfig.tableDefPackage).#(tableDefClassName);
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,11 +43,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 #end
-import java.math.BigInteger;
 import java.util.List;
 
 /**
- * #(tableComment) 控制层。
+ * #(tableComment)
  *
 #if(javadocConfig.getAuthor())
  * @author #(javadocConfig.getAuthor())
@@ -81,7 +82,7 @@ public class #(table.buildControllerClassName()) extends CRUDController<#(entity
 
     @Override
     public TableDef getTableDef() {
-        return #(tableDefClassName).#(tableDefConfig.buildFieldName(table.buildEntityClassName() + tableDefConfig.instanceSuffix));
+        return #(tableDefConfig.buildFieldName(table.buildEntityClassName() + tableDefConfig.instanceSuffix));
     }
     /**
      * 保存#(tableComment)。

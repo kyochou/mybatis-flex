@@ -29,7 +29,6 @@ import lombok.experimental.Accessors;
 #if(entityConfig.isLombokAllArgsConstructorEnable())
 import lombok.AllArgsConstructor;
 #end
-import jakarta.persistence.MappedSuperclass;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldNameConstants;

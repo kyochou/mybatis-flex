@@ -2,9 +2,10 @@ package cn.org.kyo;
 
 import com.mybatisflex.codegen.Generator;
 import com.mybatisflex.codegen.config.GlobalConfig;
+import com.mybatisflex.codegen.dialect.JdbcTypeMapping;
 import com.zaxxer.hikari.HikariDataSource;
 
-// mvn clean compile && mvn exec:java -Dexec.mainClass="cn.org.kyo.gen.db.DBGenApplication" -Dspring.profiles.active=dev
+// mvn exec:java -Dexec.mainClass="cn.org.kyo.DBGenApplication" -Dspring.profiles.active=dev
 public class DBGenApplication {
 
 
@@ -37,15 +38,16 @@ public class DBGenApplication {
         c.getStrategyConfig()
             .setIgnoreColumns("id", "created_at", "updated_at")
             .setTablePrefix("adm_")
-            .setGenerateTable("adm_user", "adm_role", "adm_organization");
+            .setGenerateTable("adm_user", "adm_role", "adm_organization", "adm_user_role");
 
         return c;
     }
 
     public static GlobalConfig createGlobalConfig() {
+        JdbcTypeMapping.registerMapping(java.math.BigInteger.class, Long.class);
         //创建配置内容
         GlobalConfig globalConfig = new GlobalConfig();
-        globalConfig.setSourceDir("/Users/kyo/projects/java/admin/src/main/java/");
+        globalConfig.setSourceDir("/Users/kyo/projects/java/adminflex/admin/src/main/java/");
 
         //设置生成 entity 并启用 Lombok
         globalConfig.enableEntity()
@@ -61,8 +63,7 @@ public class DBGenApplication {
         globalConfig.enableTableDef();
         globalConfig.enableService().setOverwriteEnable(true);
         globalConfig.enableServiceImpl().setOverwriteEnable(false);
-        globalConfig.enableController().setOverwriteEnable(false)
-                .setOverwriteEnable(true);
+        globalConfig.enableController().setOverwriteEnable(false);
 
         // String tplDir = System.getProperty("user.dir") + "/src/main/java/cn/org/kyo/cmd/dbgen/tpls/";
         // globalConfig.getTemplateConfig()
