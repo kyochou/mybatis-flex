@@ -3,6 +3,7 @@ package cn.org.kyo;
 import com.mybatisflex.codegen.Generator;
 import com.mybatisflex.codegen.config.GlobalConfig;
 import com.mybatisflex.codegen.dialect.JdbcTypeMapping;
+import com.mysql.cj.util.StringUtils;
 import com.zaxxer.hikari.HikariDataSource;
 
 // mvn exec:java -Dexec.mainClass="cn.org.kyo.DBGenApplication" -Dspring.profiles.active=dev
@@ -17,8 +18,12 @@ public class DBGenApplication {
         dataSource.setUsername("root");
         dataSource.setPassword("root");
 
-        // 生成 system 包
-        new Generator(dataSource, createSystemConfig()).generate();
+        new Generator(dataSource, createConfig("system", "adm_",new String[] {
+            "adm_user", "adm_role", "adm_organization", "adm_user_role"
+        })).generate();
+        new Generator(dataSource, createConfig("member", null, new String[] {
+            "user"
+        })).generate();
 
         // 关闭应用上下文
         dataSource.close();
@@ -27,23 +32,25 @@ public class DBGenApplication {
     }
 
 
-    public static GlobalConfig createSystemConfig() {
-        GlobalConfig c = createGlobalConfig();
+    public static GlobalConfig createConfig(String module, String prefix, String[] tables) {
+        GlobalConfig c = createGlobalConfig(module);
 
         //设置根包
         c.getPackageConfig()
-            .setBasePackage("cn.org.kyo.admin.system");
+            .setBasePackage("cn.org.kyo.admin." + module);
+        if (!StringUtils.isEmptyOrWhitespaceOnly(prefix)) {
+                c.setTablePrefix(prefix);
+        }
 
         //设置表前缀和只生成哪些表，setGenerateTable 未配置时，生成所有表
         c.getStrategyConfig()
             .setIgnoreColumns("id", "created_at", "updated_at")
-            .setTablePrefix("adm_")
-            .setGenerateTable("adm_user", "adm_role", "adm_organization", "adm_user_role");
+            .setGenerateTable(tables);
 
         return c;
     }
 
-    public static GlobalConfig createGlobalConfig() {
+    public static GlobalConfig createGlobalConfig(String module) {
         JdbcTypeMapping.registerMapping(java.math.BigInteger.class, Long.class);
         //创建配置内容
         GlobalConfig globalConfig = new GlobalConfig();
@@ -61,9 +68,9 @@ public class DBGenApplication {
 
         globalConfig.enableMapper().setOverwriteEnable(false).setMapperAnnotation(true);
         globalConfig.enableTableDef();
-        globalConfig.enableService().setOverwriteEnable(true);
+        globalConfig.enableService().setOverwriteEnable(false);
         globalConfig.enableServiceImpl().setOverwriteEnable(false);
-        globalConfig.enableController().setOverwriteEnable(false);
+        globalConfig.enableController().setRequestMappingPrefix(module).setOverwriteEnable(false);
 
         // String tplDir = System.getProperty("user.dir") + "/src/main/java/cn/org/kyo/cmd/dbgen/tpls/";
         // globalConfig.getTemplateConfig()
