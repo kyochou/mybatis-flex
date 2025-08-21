@@ -15,14 +15,28 @@
  */
 package com.mybatisflex.codegen.entity;
 
-import com.mybatisflex.codegen.config.*;
-import com.mybatisflex.core.util.StringUtil;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.math.BigInteger;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
+
+import com.mybatisflex.codegen.config.ControllerConfig;
+import com.mybatisflex.codegen.config.EntityConfig;
+import com.mybatisflex.codegen.config.GlobalConfig;
+import com.mybatisflex.codegen.config.MapperConfig;
+import com.mybatisflex.codegen.config.MapperXmlConfig;
+import com.mybatisflex.codegen.config.ServiceConfig;
+import com.mybatisflex.codegen.config.ServiceImplConfig;
+import com.mybatisflex.codegen.config.TableConfig;
+import com.mybatisflex.codegen.config.TableDefConfig;
+import com.mybatisflex.core.util.StringUtil;
 
 /**
  * 数据库表信息。
@@ -190,7 +204,7 @@ public class Table {
 
         if (superColumns.contains(column.getProperty())) {
             return;
-        }
+        } 
 
         if (column.getAutoIncrement() == null) {
             column.setAutoIncrement(false);

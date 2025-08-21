@@ -66,10 +66,19 @@ public class ControllerGenerator implements IGenerator {
         if (controllerJavaFile.exists() && !controllerConfig.isOverwriteEnable()) {
             return;
         }
+        
 
         TableDefConfig tableDefConfig = globalConfig.getTableDefConfig();
+
+        String realEntityName = table.buildEntityClassName();
+        String prefix = controllerConfig.getRequestMappingPrefix();
+        if (prefix != null && realEntityName.toLowerCase().startsWith(prefix.toLowerCase())) {
+            realEntityName = realEntityName.substring(prefix.length());
+        }
+
         Map<String, Object> params = new HashMap<>(4);
         params.put("table", table);
+        params.put("modelName", realEntityName);
         params.put("packageConfig", packageConfig);
         params.put("tableDefConfig", tableDefConfig);
         params.put("controllerConfig", controllerConfig);

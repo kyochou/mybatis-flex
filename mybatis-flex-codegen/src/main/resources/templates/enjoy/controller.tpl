@@ -18,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import #(packageConfig.entityPackage).#(entityClassName);
 import #(packageConfig.servicePackage).#(table.buildServiceClassName());
 import #(packageConfig.mapperPackage).#(table.buildMapperClassName());
-import cn.org.kyo.admin.controller.CRUDController;
+import cn.org.kyo.admin.base.CRUDController;
 #if(controllerConfig.restStyle)
 import org.springframework.web.bind.annotation.RestController;
 #else
@@ -39,7 +39,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 #end
 
 /**
- * #(tableComment)
+ * #(table.buildControllerRequestMappingPrefix())/#(tableComment)
  *
 #if(javadocConfig.getAuthor())
  * @author #(javadocConfig.getAuthor())
@@ -59,7 +59,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 #if(withSwagger && swaggerVersion.getName() == "DOC")
 @Tag(name = "#(tableComment)接口")
 #end
-@RequestMapping("#(table.buildControllerRequestMappingPrefix())/#(firstCharToLowerCase(entityClassName))")
+@RequestMapping("#(table.buildControllerRequestMappingPrefix())/#(firstCharToLowerCase(modelName))")
 public class #(table.buildControllerClassName()) extends CRUDController<#(entityClassName)> {
 
     @Autowired

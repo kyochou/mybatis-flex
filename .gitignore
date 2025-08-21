@@ -17,3 +17,4 @@ dist
 package-lock.json
 .flattened-pom.xml
 /docs/.vitepress/cache/
+target_test-classes

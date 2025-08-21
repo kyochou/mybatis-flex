@@ -1,7 +1,10 @@
 package #(packageConfig.servicePackage);
 
-import #(serviceConfig.buildSuperClassImport());
+import org.springframework.stereotype.Service;
+
+import cn.org.kyo.admin.base.AdminBaseService;
 import #(packageConfig.entityPackage).#(table.buildEntityClassName());
+import #(packageConfig.mapperPackage).#(table.buildMapperClassName());
 
 /**
  * #(table.getComment()) 服务层。
@@ -13,6 +16,7 @@ import #(packageConfig.entityPackage).#(table.buildEntityClassName());
  * @since #(javadocConfig.getSince())
 #end
  */
-public interface #(table.buildServiceClassName()) extends #(serviceConfig.buildSuperClassName())<#(table.buildEntityClassName())> {
-
+@Service
+public class #(table.buildServiceClassName()) extends AdminBaseService<#(table.buildMapperClassName()), #(table.buildEntityClassName())> {
+ 
 }

@@ -1,9 +1,10 @@
 package #(packageConfig.mapperPackage);
 
+import cn.org.kyo.admin.base.AdminBaseMapper;
+
 #if(mapperConfig.isMapperAnnotation())
 import org.apache.ibatis.annotations.Mapper;
 #end
-import #(mapperConfig.buildSuperClassImport());
 import #(packageConfig.entityPackage).#(table.buildEntityClassName());
 
 /**
@@ -19,6 +20,6 @@ import #(packageConfig.entityPackage).#(table.buildEntityClassName());
 #if(mapperConfig.isMapperAnnotation())
 @Mapper
 #end
-public interface #(table.buildMapperClassName()) extends #(mapperConfig.buildSuperClassName())<#(table.buildEntityClassName())> {
+public interface #(table.buildMapperClassName()) extends AdminBaseMapper<#(table.buildEntityClassName())> {
 
 }

@@ -3,8 +3,11 @@ package cn.org.kyo;
 import com.mybatisflex.codegen.Generator;
 import com.mybatisflex.codegen.config.GlobalConfig;
 import com.mybatisflex.codegen.dialect.JdbcTypeMapping;
+import com.mybatisflex.codegen.generator.GeneratorFactory;
 import com.mysql.cj.util.StringUtils;
 import com.zaxxer.hikari.HikariDataSource;
+
+import cn.org.kyo.gen.DataTsGenerator;
 
 // mvn exec:java -Dexec.mainClass="cn.org.kyo.DBGenApplication" -Dspring.profiles.active=dev
 public class DBGenApplication {
@@ -33,6 +36,8 @@ public class DBGenApplication {
 
 
     public static GlobalConfig createConfig(String module, String prefix, String[] tables) {
+        GeneratorFactory.registerGenerator("data.ts",new DataTsGenerator());
+
         GlobalConfig c = createGlobalConfig(module);
 
         //设置根包
@@ -51,6 +56,8 @@ public class DBGenApplication {
     }
 
     public static GlobalConfig createGlobalConfig(String module) {
+        String prefix = Utils.upperFirst(module);
+
         JdbcTypeMapping.registerMapping(java.math.BigInteger.class, Long.class);
         //创建配置内容
         GlobalConfig globalConfig = new GlobalConfig();
@@ -58,6 +65,7 @@ public class DBGenApplication {
 
         //设置生成 entity 并启用 Lombok
         globalConfig.enableEntity()
+            .setClassPrefix(prefix)
             .setOverwriteEnable(false)
             .setWithBaseClassEnable(true)
             .setLombokNoArgsConstructorEnable(false)
@@ -66,11 +74,13 @@ public class DBGenApplication {
             .setWithActiveRecord(false)
             .setJdkVersion(21);
 
-        globalConfig.enableMapper().setOverwriteEnable(false).setMapperAnnotation(true);
-        globalConfig.enableTableDef();
-        globalConfig.enableService().setOverwriteEnable(false);
-        globalConfig.enableServiceImpl().setOverwriteEnable(false);
-        globalConfig.enableController().setRequestMappingPrefix(module).setOverwriteEnable(false);
+        globalConfig.enableMapper().setClassPrefix(prefix).setOverwriteEnable(false).setMapperAnnotation(true);
+        globalConfig.enableTableDef().setClassPrefix(prefix);
+        globalConfig.enableService().setClassPrefix(prefix).setOverwriteEnable(false);
+        globalConfig.enableController()
+        .setClassPrefix(prefix)
+        .setRequestMappingPrefix(module)
+        .setOverwriteEnable(false);
 
         // String tplDir = System.getProperty("user.dir") + "/src/main/java/cn/org/kyo/cmd/dbgen/tpls/";
         // globalConfig.getTemplateConfig()
