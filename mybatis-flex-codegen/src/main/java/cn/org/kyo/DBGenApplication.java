@@ -25,7 +25,10 @@ public class DBGenApplication {
             "adm_user", "adm_role", "adm_organization", "adm_user_role"
         })).generate();
         new Generator(dataSource, createConfig("member", null, new String[] {
-            "user"
+            "user", "user_balance_detail"
+        })).generate();
+        new Generator(dataSource, createConfig("creation", null, new String[] {
+            "products", "tasks"
         })).generate();
 
         // 关闭应用上下文

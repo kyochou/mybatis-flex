@@ -8,10 +8,7 @@
 #set(tableClassName = tableDefConfig.buildFieldName(table.buildEntityClassName() + tableDefConfig.instanceSuffix))
 package #(packageConfig.controllerPackage);
 
-import static #(packageConfig.tableDefPackage).#(tableDefClassName).#(tableClassName);
-
-import com.mybatisflex.core.BaseMapper;
-import com.mybatisflex.core.table.TableDef;
+import #(packageConfig.tableDefPackage).#(tableDefClassName);
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,21 +57,27 @@ import io.swagger.v3.oas.annotations.Parameter;
 @Tag(name = "#(tableComment)接口")
 #end
 @RequestMapping("#(table.buildControllerRequestMappingPrefix())/#(firstCharToLowerCase(modelName))")
-public class #(table.buildControllerClassName()) extends CRUDController<#(entityClassName)> {
+public class #(table.buildControllerClassName()) extends CRUDController<#(entityClassName), #(tableDefClassName), #(table.buildMapperClassName()), #(table.buildServiceClassName())> {
 
-    @Autowired
-    private #(table.buildServiceClassName()) #(serviceVarName);
 
     @Autowired
     private #(table.buildMapperClassName()) #(mapperVarName);
 
+    @Autowired
+    private #(table.buildServiceClassName()) #(serviceVarName);
+
     @Override
-    public BaseMapper<#(entityClassName)> getMapping() {
+    public #(table.buildMapperClassName()) getMapping() {
         return #(mapperVarName);
     }
 
     @Override
-    public TableDef getTableDef() {
-        return #(tableDefConfig.buildFieldName(table.buildEntityClassName() + tableDefConfig.instanceSuffix));
+    public #(table.buildServiceClassName()) getService() {
+        return #(serviceVarName);
+    }
+
+    @Override
+    public #(tableDefClassName) getTableDef() {
+        return #(tableDefClassName).#(tableDefConfig.buildFieldName(table.buildEntityClassName() + tableDefConfig.instanceSuffix));
     }
 }

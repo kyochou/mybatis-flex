@@ -15,17 +15,18 @@
  */
 package com.mybatisflex.codegen.generator.impl;
 
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+
 import com.mybatisflex.codegen.config.GlobalConfig;
 import com.mybatisflex.codegen.config.PackageConfig;
 import com.mybatisflex.codegen.config.ServiceConfig;
+import com.mybatisflex.codegen.config.TableDefConfig;
 import com.mybatisflex.codegen.constant.TemplateConst;
 import com.mybatisflex.codegen.entity.Table;
 import com.mybatisflex.codegen.generator.IGenerator;
 import com.mybatisflex.core.util.StringUtil;
-
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Service 生成器。
@@ -54,6 +55,7 @@ public class ServiceGenerator implements IGenerator {
 
         PackageConfig packageConfig = globalConfig.getPackageConfig();
         ServiceConfig serviceConfig = globalConfig.getServiceConfig();
+        TableDefConfig tableDefConfig = globalConfig.getTableDefConfig();
 
         String sourceDir = StringUtil.hasText(serviceConfig.getSourceDir()) ? serviceConfig.getSourceDir() : packageConfig.getSourceDir();
 
@@ -71,6 +73,7 @@ public class ServiceGenerator implements IGenerator {
         params.put("table", table);
         params.put("serviceConfig", serviceConfig);
         params.put("packageConfig", packageConfig);
+        params.put("tableDefConfig", tableDefConfig);
         params.put("javadocConfig", globalConfig.getJavadocConfig());
         params.putAll(globalConfig.getCustomConfig());
         globalConfig.getTemplateConfig().getTemplate().generate(params, templatePath, serviceJavaFile);

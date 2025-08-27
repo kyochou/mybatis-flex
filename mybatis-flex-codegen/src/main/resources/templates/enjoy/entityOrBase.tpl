@@ -11,7 +11,7 @@ import #(importClass);
 #if(withActiveRecord)
 import com.mybatisflex.core.activerecord.Model;
 #end
-import cn.org.kyo.common.entity.DBEntity;
+import cn.org.kyo.admin.system.entity.OrganizationEntity;
 #if(!isBase)
 #if(withSwagger && swaggerVersion.getName() == "FOX")
 import io.swagger.annotations.ApiModel;
@@ -80,12 +80,18 @@ import jakarta.persistence.MappedSuperclass;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldNameConstants;
+import lombok.experimental.SuperBuilder;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Data
-@Accessors(chain = true)
+@SuperBuilder
 @MappedSuperclass
+@NoArgsConstructor
 @FieldNameConstants
-public class #(entityClassName) extends DBEntity {
+@Accessors(chain = true)
+@EqualsAndHashCode(callSuper = true)
+public class #(entityClassName) extends OrganizationEntity {
 
 #for(column : table.columns)
     #set(comment = javadocConfig.formatColumnComment(column.comment))

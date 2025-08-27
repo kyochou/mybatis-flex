@@ -20,6 +20,11 @@ import io.swagger.annotations.ApiModelProperty;
 #if(withSwagger && swaggerVersion.getName() == "DOC")
 import io.swagger.v3.oas.annotations.media.Schema;
 #end
+
+import lombok.EqualsAndHashCode;
+import lombok.experimental.SuperBuilder;
+import lombok.NoArgsConstructor;
+
 #if(withLombok)
 #if(withActiveRecord)
 import lombok.Data;
@@ -71,8 +76,12 @@ import lombok.NoArgsConstructor;
 @Schema(description = "#(table.getComment())")
 #end
 #if(!isBase)#(table.buildTableAnnotation())#end
+
 @Data
-@Accessors(chain = true)
+@SuperBuilder
+@NoArgsConstructor
 @FieldNameConstants
+@Accessors(chain = true)
+@EqualsAndHashCode(callSuper = true)
 public class #(entityClassName) extends #(baseClassName) {
 }

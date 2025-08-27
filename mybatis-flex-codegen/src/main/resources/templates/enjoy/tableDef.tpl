@@ -4,7 +4,7 @@
 package #(packageConfig.tableDefPackage);
 
 import com.mybatisflex.core.query.QueryColumn;
-import com.mybatisflex.core.table.TableDef;
+import cn.org.kyo.common.entity.BaseTableDef;
 
 #if(jdkVersion >= 14)
 import java.io.Serial;
@@ -20,7 +20,7 @@ import java.io.Serial;
  * @since #(javadocConfig.getSince())
 #end
  */
-public class #(tableDefClassName) extends TableDef {
+public class #(tableDefClassName) extends BaseTableDef {
 
     #if(jdkVersion >= 14)
     @Serial

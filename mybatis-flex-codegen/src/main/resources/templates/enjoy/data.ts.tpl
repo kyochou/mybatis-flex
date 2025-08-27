@@ -4,6 +4,7 @@
 #set(withActiveRecord = entityConfig.isWithActiveRecord())
 #set(jdkVersion = entityConfig.getJdkVersion())
 import apis from '#/api/api'
+import #(entityModule)Api from '#/entities/#(entityModule)'
 import { Fields } from '#/utils/entity/field'
 
 const entity = {
