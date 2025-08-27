@@ -9,7 +9,7 @@
 package #(packageConfig.controllerPackage);
 
 import #(packageConfig.tableDefPackage).#(tableDefClassName);
-
+import static #(packageConfig.tableDefPackage).#(tableDefClassName).#(tableClassName);
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.beans.factory.annotation.Autowired;
 import #(packageConfig.entityPackage).#(entityClassName);
@@ -78,6 +78,6 @@ public class #(table.buildControllerClassName()) extends CRUDController<#(entity
 
     @Override
     public #(tableDefClassName) getTableDef() {
-        return #(tableDefClassName).#(tableDefConfig.buildFieldName(table.buildEntityClassName() + tableDefConfig.instanceSuffix));
+        return #(tableDefConfig.buildFieldName(table.buildEntityClassName() + tableDefConfig.instanceSuffix));
     }
 }

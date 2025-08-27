@@ -1,13 +1,13 @@
 package cn.org.kyo;
 
+import cn.org.kyo.gen.DataTsGenerator;
+import cn.org.kyo.gen.EntityTsGenerator;
 import com.mybatisflex.codegen.Generator;
 import com.mybatisflex.codegen.config.GlobalConfig;
 import com.mybatisflex.codegen.dialect.JdbcTypeMapping;
 import com.mybatisflex.codegen.generator.GeneratorFactory;
 import com.mysql.cj.util.StringUtils;
 import com.zaxxer.hikari.HikariDataSource;
-
-import cn.org.kyo.gen.DataTsGenerator;
 
 // mvn exec:java -Dexec.mainClass="cn.org.kyo.DBGenApplication" -Dspring.profiles.active=dev
 public class DBGenApplication {
@@ -21,15 +21,21 @@ public class DBGenApplication {
         dataSource.setUsername("root");
         dataSource.setPassword("root");
 
-        new Generator(dataSource, createConfig("system", "adm_",new String[] {
-            "adm_user", "adm_role", "adm_organization", "adm_user_role"
-        })).generate();
-        new Generator(dataSource, createConfig("member", null, new String[] {
-            "user", "user_balance_detail"
-        })).generate();
-        new Generator(dataSource, createConfig("creation", null, new String[] {
-            "products", "tasks"
-        })).generate();
+        new Generator(dataSource, createConfig("system", "adm_", new String[]{
+                                                   "adm_user", "adm_role", "adm_organization", "adm_user_role"
+                                               }
+        )
+        ).generate();
+        new Generator(dataSource, createConfig("member", null, new String[]{
+                                                   "user", "user_balance_detail"
+                                               }
+        )
+        ).generate();
+        new Generator(dataSource, createConfig("creation", null, new String[]{
+                                                   "products", "tasks"
+                                               }
+        )
+        ).generate();
 
         // 关闭应用上下文
         dataSource.close();
@@ -39,7 +45,8 @@ public class DBGenApplication {
 
 
     public static GlobalConfig createConfig(String module, String prefix, String[] tables) {
-        GeneratorFactory.registerGenerator("data.ts",new DataTsGenerator());
+        GeneratorFactory.registerGenerator("data.ts", new DataTsGenerator());
+        GeneratorFactory.registerGenerator("entity.ts", new EntityTsGenerator());
 
         GlobalConfig c = createGlobalConfig(module);
 
@@ -47,7 +54,7 @@ public class DBGenApplication {
         c.getPackageConfig()
             .setBasePackage("cn.org.kyo.admin." + module);
         if (!StringUtils.isEmptyOrWhitespaceOnly(prefix)) {
-                c.setTablePrefix(prefix);
+            c.setTablePrefix(prefix);
         }
 
         //设置表前缀和只生成哪些表，setGenerateTable 未配置时，生成所有表
@@ -81,9 +88,9 @@ public class DBGenApplication {
         globalConfig.enableTableDef().setClassPrefix(prefix);
         globalConfig.enableService().setClassPrefix(prefix).setOverwriteEnable(false);
         globalConfig.enableController()
-        .setClassPrefix(prefix)
-        .setRequestMappingPrefix(module)
-        .setOverwriteEnable(false);
+            .setClassPrefix(prefix)
+            .setRequestMappingPrefix(module)
+            .setOverwriteEnable(false);
 
         // String tplDir = System.getProperty("user.dir") + "/src/main/java/cn/org/kyo/cmd/dbgen/tpls/";
         // globalConfig.getTemplateConfig()
