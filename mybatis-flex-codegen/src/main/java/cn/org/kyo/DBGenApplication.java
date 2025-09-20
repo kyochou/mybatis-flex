@@ -36,6 +36,20 @@ public class DBGenApplication {
                                                }
         )
         ).generate();
+        new Generator(dataSource, createConfig("activity", null, new String[]{
+                                                   "activity", "activity_detail",
+                                                   "activity_cond", "activity_cond_value",
+                                                   "activity_reg", "activity_reg_detail", "activity_composition"
+                                               }
+        )
+        ).generate();
+        new Generator(dataSource, createConfig("course", null, new String[]{
+                                                   "course_category", "course_curriculum",
+                                                   "course_chapter", "course",
+                                                   "course_eval"
+                                               }
+        )
+        ).generate();
 
         // 关闭应用上下文
         dataSource.close();

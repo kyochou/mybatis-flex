@@ -3,10 +3,10 @@
 #set(swaggerVersion = entityConfig.getSwaggerVersion())
 #set(withActiveRecord = entityConfig.isWithActiveRecord())
 #set(jdkVersion = entityConfig.getJdkVersion())
-import mentities from '#/entities/#(entityModule)'
+import entities from '#/entities/#(entityModule)'
 import { Fields } from '#/utils/entity/field'
 
-const entity = mentities.#(entityName)
+const entity = entities.#(entityName)
 entity.fields = new Fields(entity, [
   Fields.COMMON.id(),
 #for(column : table.columns)
