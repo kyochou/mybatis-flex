@@ -1,7 +1,5 @@
 package cn.org.kyo;
 
-import cn.org.kyo.gen.DataTsGenerator;
-import cn.org.kyo.gen.EntityTsGenerator;
 import com.mybatisflex.codegen.Generator;
 import com.mybatisflex.codegen.config.GlobalConfig;
 import com.mybatisflex.codegen.dialect.JdbcTypeMapping;
@@ -9,111 +7,112 @@ import com.mybatisflex.codegen.generator.GeneratorFactory;
 import com.mysql.cj.util.StringUtils;
 import com.zaxxer.hikari.HikariDataSource;
 
+import cn.org.kyo.gen.DataTsGenerator;
+import cn.org.kyo.gen.EntityTsGenerator;
+
 // mvn exec:java -Dexec.mainClass="cn.org.kyo.DBGenApplication" -Dspring.profiles.active=dev
 public class DBGenApplication {
 
+        public static void main(String[] args) {
+                // 配置数据源
+                HikariDataSource dataSource = new HikariDataSource();
+                dataSource.setJdbcUrl(
+                                "jdbc:mysql://127.0.0.1:43306/riiixai?useInformationSchema=true&useSSL=false&useUnicode=true&characterEncoding=UTF-8&charset=utf8mb4&parseTime=True");
+                dataSource.setUsername("root");
+                dataSource.setPassword("root");
 
-    public static void main(String[] args) {
-        // 配置数据源
-        HikariDataSource dataSource = new HikariDataSource();
-        dataSource.setJdbcUrl(
-            "jdbc:mysql://127.0.0.1:43306/riiixai?useInformationSchema=true&useSSL=false&useUnicode=true&characterEncoding=UTF-8&charset=utf8mb4&parseTime=True");
-        dataSource.setUsername("root");
-        dataSource.setPassword("root");
+                new Generator(dataSource, createConfig("system", "adm_", new String[] {
+                                "adm_user", "adm_role", "adm_organization", "adm_user_role", "adm_tag"
+                })).generate();
+                new Generator(dataSource, createConfig("member", null, new String[] {
+                                "user", "user_balance_detail"
+                })).generate();
+                new Generator(dataSource, createConfig("creation", "", new String[] {
+                                "products", "tasks", "creation_tag_type", "creation_tag"
+                })).generate();
+                new Generator(dataSource, createConfig("activity", null, new String[] {
+                                "activity", "activity_detail",
+                                "activity_cond", "activity_cond_value",
+                                "activity_reg", "activity_reg_detail", "activity_composition"
+                })).generate();
+                new Generator(dataSource, createConfig("course", null, new String[] {
+                                "course_category", "course_curriculum",
+                                "course_chapter", "course",
+                                "course_eval"
+                })).generate();
 
-        new Generator(dataSource, createConfig("system", "adm_", new String[]{
-                                                   "adm_user", "adm_role", "adm_organization", "adm_user_role"
-                                               }
-        )
-        ).generate();
-        new Generator(dataSource, createConfig("member", null, new String[]{
-                                                   "user", "user_balance_detail"
-                                               }
-        )
-        ).generate();
-        new Generator(dataSource, createConfig("creation", null, new String[]{
-                                                   "products", "tasks"
-                                               }
-        )
-        ).generate();
-        new Generator(dataSource, createConfig("activity", null, new String[]{
-                                                   "activity", "activity_detail",
-                                                   "activity_cond", "activity_cond_value",
-                                                   "activity_reg", "activity_reg_detail", "activity_composition"
-                                               }
-        )
-        ).generate();
-        new Generator(dataSource, createConfig("course", null, new String[]{
-                                                   "course_category", "course_curriculum",
-                                                   "course_chapter", "course",
-                                                   "course_eval"
-                                               }
-        )
-        ).generate();
+                // 关闭应用上下文
+                dataSource.close();
+                System.exit(0);
 
-        // 关闭应用上下文
-        dataSource.close();
-        System.exit(0);
-
-    }
-
-
-    public static GlobalConfig createConfig(String module, String prefix, String[] tables) {
-        GeneratorFactory.registerGenerator("data.ts", new DataTsGenerator());
-        GeneratorFactory.registerGenerator("entity.ts", new EntityTsGenerator());
-
-        GlobalConfig c = createGlobalConfig(module);
-
-        //设置根包
-        c.getPackageConfig()
-            .setBasePackage("cn.org.kyo.admin." + module);
-        if (!StringUtils.isEmptyOrWhitespaceOnly(prefix)) {
-            c.setTablePrefix(prefix);
         }
 
-        //设置表前缀和只生成哪些表，setGenerateTable 未配置时，生成所有表
-        c.getStrategyConfig()
-            .setIgnoreColumns("id", "created_at", "updated_at")
-            .setGenerateTable(tables);
+        /**
+         * 
+         * @param module
+         * @param prefix 为 null 表示不存在, 为 "" 表示使用默认值 module_
+         * @param tables
+         * @return
+         */
+        public static GlobalConfig createConfig(String module, String prefix, String[] tables) {
+                if (prefix == "") {
+                        prefix = module + "_";
+                }
+                GeneratorFactory.registerGenerator("data.ts", new DataTsGenerator());
+                GeneratorFactory.registerGenerator("entity.ts", new EntityTsGenerator());
 
-        return c;
-    }
+                GlobalConfig c = createGlobalConfig(module);
 
-    public static GlobalConfig createGlobalConfig(String module) {
-        String prefix = Utils.upperFirst(module);
+                // 设置根包
+                c.getPackageConfig()
+                                .setBasePackage("cn.org.kyo.admin." + module);
+                if (!StringUtils.isEmptyOrWhitespaceOnly(prefix)) {
+                        c.setTablePrefix(prefix);
+                }
 
-        JdbcTypeMapping.registerMapping(java.math.BigInteger.class, Long.class);
-        //创建配置内容
-        GlobalConfig globalConfig = new GlobalConfig();
-        globalConfig.setSourceDir("/Users/kyo/projects/java/adminflex/admin/src/main/java/");
+                // 设置表前缀和只生成哪些表，setGenerateTable 未配置时，生成所有表
+                c.getStrategyConfig()
+                                .setIgnoreColumns("id", "created_at", "updated_at")
+                                .setGenerateTable(tables);
 
-        //设置生成 entity 并启用 Lombok
-        globalConfig.enableEntity()
-            .setClassPrefix(prefix)
-            .setOverwriteEnable(false)
-            .setWithBaseClassEnable(true)
-            .setLombokNoArgsConstructorEnable(false)
-            .setLombokAllArgsConstructorEnable(false)
-            .setWithLombok(true)
-            .setWithActiveRecord(false)
-            .setJdkVersion(21);
+                return c;
+        }
 
-        globalConfig.enableMapper().setClassPrefix(prefix).setOverwriteEnable(false).setMapperAnnotation(true);
-        globalConfig.enableTableDef().setClassPrefix(prefix);
-        globalConfig.enableService().setClassPrefix(prefix).setOverwriteEnable(false);
-        globalConfig.enableController()
-            .setClassPrefix(prefix)
-            .setRequestMappingPrefix(module)
-            .setOverwriteEnable(false);
+        public static GlobalConfig createGlobalConfig(String module) {
+                String prefix = Utils.upperFirst(module);
 
-        // String tplDir = System.getProperty("user.dir") + "/src/main/java/cn/org/kyo/cmd/dbgen/tpls/";
-        // globalConfig.getTemplateConfig()
-        // .setTemplate(new com.mybatisflex.codegen.template.impl.EnjoyTemplate())
-        // .setEntity(tplDir + "entityOrBase.tpl")
-        // .setMapper(tplDir + "mapper.tpl")
-        // .setController(tplDir + "controller.tpl");
+                JdbcTypeMapping.registerMapping(java.math.BigInteger.class, Long.class);
+                // 创建配置内容
+                GlobalConfig globalConfig = new GlobalConfig();
+                globalConfig.setSourceDir("/Users/kyo/projects/java/adminflex/admin/src/main/java/");
 
+                // 设置生成 entity 并启用 Lombok
+                globalConfig.enableEntity()
+                                .setClassPrefix(prefix)
+                                .setOverwriteEnable(false)
+                                .setWithBaseClassEnable(true)
+                                .setLombokNoArgsConstructorEnable(false)
+                                .setLombokAllArgsConstructorEnable(false)
+                                .setWithLombok(true)
+                                .setWithActiveRecord(false)
+                                .setJdkVersion(21);
 
-        return globalConfig;
-    }
+                globalConfig.enableMapper().setClassPrefix(prefix).setOverwriteEnable(false).setMapperAnnotation(true);
+                globalConfig.enableTableDef().setClassPrefix(prefix);
+                globalConfig.enableService().setClassPrefix(prefix).setOverwriteEnable(false);
+                globalConfig.enableController()
+                                .setClassPrefix(prefix)
+                                .setRequestMappingPrefix(module)
+                                .setOverwriteEnable(false);
+
+                // String tplDir = System.getProperty("user.dir") +
+                // "/src/main/java/cn/org/kyo/cmd/dbgen/tpls/";
+                // globalConfig.getTemplateConfig()
+                // .setTemplate(new com.mybatisflex.codegen.template.impl.EnjoyTemplate())
+                // .setEntity(tplDir + "entityOrBase.tpl")
+                // .setMapper(tplDir + "mapper.tpl")
+                // .setController(tplDir + "controller.tpl");
+
+                return globalConfig;
+        }
 }
