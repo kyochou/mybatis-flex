@@ -10,8 +10,8 @@ import com.zaxxer.hikari.HikariDataSource;
 import cn.org.kyo.gen.DataTsGenerator;
 import cn.org.kyo.gen.EntityTsGenerator;
 
-// mvn exec:java -Dexec.mainClass="cn.org.kyo.DBGenApplication" -Dspring.profiles.active=dev
-public class DBGenApplication {
+// mvn exec:java -Dexec.mainClass="cn.org.kyo.RixAdmDBGen" -Dspring.profiles.active=dev
+public class RixAdmDBGen {
 
         public static void main(String[] args) {
                 // 配置数据源
@@ -39,6 +39,12 @@ public class DBGenApplication {
                                 "course_category", "course_curriculum",
                                 "course_chapter", "course",
                                 "course_eval"
+                })).generate();
+                new Generator(dataSource, createConfig("comment", "", new String[] {
+                                "comment_main", "comment_report"
+                })).generate();
+                new Generator(dataSource, createConfig("message", null, new String[] {
+                                "site_message"
                 })).generate();
 
                 // 关闭应用上下文
@@ -84,7 +90,7 @@ public class DBGenApplication {
                 JdbcTypeMapping.registerMapping(java.math.BigInteger.class, Long.class);
                 // 创建配置内容
                 GlobalConfig globalConfig = new GlobalConfig();
-                globalConfig.setSourceDir("/Users/kyo/projects/java/adminflex/admin/src/main/java/");
+                globalConfig.setSourceDir("/Users/kyo/projects/riiixai/admin-server/src/main/java/");
 
                 // 设置生成 entity 并启用 Lombok
                 globalConfig.enableEntity()
